@@ -234,4 +234,24 @@ export class AdministradorMemoria {
         this.partirYAsignar(indice, proceso)
         return true
     }
+
+    // Busca el bloque libre que deje el menor desperdicio de espacio residual.
+    asignarBestFit(proceso: Proceso): boolean {
+        let mejorIdx: number | null = null
+        let menorDesperdicio = Infinity
+
+        this.getBloques().forEach((b, i) => {
+            if (b.isLibre() && b.getTamano() >= proceso.getTamanoMemoria()) {
+                const desperdicio = b.getTamano() - proceso.getTamanoMemoria()
+                if (desperdicio < menorDesperdicio) {
+                    menorDesperdicio = desperdicio
+                    mejorIdx = i
+                }
+            }
+        })
+
+        if (mejorIdx === null) return false
+        this.partirYAsignar(mejorIdx, proceso)
+        return true
+    }
 }
