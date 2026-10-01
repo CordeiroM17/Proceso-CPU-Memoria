@@ -224,4 +224,14 @@ export class AdministradorMemoria {
         bloque.setPid(proceso.getPid())
         this.setBloques(bloques)
     }
+
+    // Busca el primer hueco libre donde quepa el proceso.
+    asignarFirstFit(proceso: Proceso): boolean {
+        const indice = this.getBloques().findIndex(
+            (b) => b.isLibre() && b.getTamano() >= proceso.getTamanoMemoria()
+        )
+        if (indice === -1) return false
+        this.partirYAsignar(indice, proceso)
+        return true
+    }
 }
