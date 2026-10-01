@@ -312,3 +312,135 @@ export class AdministradorMemoria {
         }
     }
 }
+
+// ==============================================================================
+// MOTOR DEL SIMULADOR (TICKS Y PLANIFICADOR ROUND-ROBIN)
+// ==============================================================================
+
+export class SimuladorSO {
+    private _memoria: AdministradorMemoria = new AdministradorMemoria(1024)
+    private _algoritmo_memoria: AlgoritmoMemoria = "FIRST_FIT" // FIRST_FIT, BEST_FIT o WORST_FIT
+    private _quantum_limite: number = 2
+
+    // Colas de procesos
+    private _cola_nuevos: Proceso[] = []
+    private _cola_esperando_memoria: Proceso[] = []
+    private _cola_listos: Proceso[] = []
+    private _cola_bloqueados: Proceso[] = []
+    private _procesos_terminados: Proceso[] = []
+
+    // Estado de CPU y estadísticas
+    private _cpu_proceso: Proceso | null = null
+    private _reloj_tick: number = 0
+    private _cambios_contexto: number = 0
+    private _ticks_cpu_ocupada: number = 0
+
+    constructor(algoritmoMemoria: AlgoritmoMemoria = "FIRST_FIT", quantum: number = 2) {
+        this.setMemoria(new AdministradorMemoria(1024))
+        this.setAlgoritmoMemoria(algoritmoMemoria)
+        this.setQuantumLimite(quantum)
+    }
+
+    // Configuración
+
+    private setMemoria(value: AdministradorMemoria): void {
+        this._memoria = value
+    }
+
+    getMemoria(): AdministradorMemoria {
+        return this._memoria
+    }
+
+    setAlgoritmoMemoria(value: AlgoritmoMemoria): void {
+        this._algoritmo_memoria = value
+    }
+
+    getAlgoritmoMemoria(): AlgoritmoMemoria {
+        return this._algoritmo_memoria
+    }
+
+    setQuantumLimite(value: number): void {
+        if (value < 1) throw new Error("El quantum debe ser al menos 1 tick")
+        this._quantum_limite = value
+    }
+
+    getQuantumLimite(): number {
+        return this._quantum_limite
+    }
+
+    // Colas (los getters devuelven copias, solo el simulador las modifica)
+
+    private setColaNuevos(value: Proceso[]): void {
+        this._cola_nuevos = value
+    }
+
+    getColaNuevos(): Proceso[] {
+        return [...this._cola_nuevos]
+    }
+
+    private setColaEsperandoMemoria(value: Proceso[]): void {
+        this._cola_esperando_memoria = value
+    }
+
+    getColaEsperandoMemoria(): Proceso[] {
+        return [...this._cola_esperando_memoria]
+    }
+
+    private setColaListos(value: Proceso[]): void {
+        this._cola_listos = value
+    }
+
+    getColaListos(): Proceso[] {
+        return [...this._cola_listos]
+    }
+
+    private setColaBloqueados(value: Proceso[]): void {
+        this._cola_bloqueados = value
+    }
+
+    getColaBloqueados(): Proceso[] {
+        return [...this._cola_bloqueados]
+    }
+
+    private setProcesosTerminados(value: Proceso[]): void {
+        this._procesos_terminados = value
+    }
+
+    getProcesosTerminados(): Proceso[] {
+        return [...this._procesos_terminados]
+    }
+
+    // Estado de CPU y estadísticas
+
+    private setCpuProceso(value: Proceso | null): void {
+        this._cpu_proceso = value
+    }
+
+    getCpuProceso(): Proceso | null {
+        return this._cpu_proceso
+    }
+
+    private setRelojTick(value: number): void {
+        this._reloj_tick = value
+    }
+
+    getRelojTick(): number {
+        return this._reloj_tick
+    }
+
+    private setCambiosContexto(value: number): void {
+        this._cambios_contexto = value
+    }
+
+    getCambiosContexto(): number {
+        return this._cambios_contexto
+    }
+
+    private setTicksCpuOcupada(value: number): void {
+        this._ticks_cpu_ocupada = value
+    }
+
+    getTicksCpuOcupada(): number {
+        return this._ticks_cpu_ocupada
+    }
+}
