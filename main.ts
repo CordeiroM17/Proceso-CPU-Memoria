@@ -254,4 +254,23 @@ export class AdministradorMemoria {
         this.partirYAsignar(mejorIdx, proceso)
         return true
     }
+
+    // Busca el bloque libre de mayor tamaño absoluto.
+    asignarWorstFit(proceso: Proceso): boolean {
+        let peorIdx: number | null = null
+        let mayorTamano = -1
+
+        this.getBloques().forEach((b, i) => {
+            if (b.isLibre() && b.getTamano() >= proceso.getTamanoMemoria()) {
+                if (b.getTamano() > mayorTamano) {
+                    mayorTamano = b.getTamano()
+                    peorIdx = i
+                }
+            }
+        })
+
+        if (peorIdx === null) return false
+        this.partirYAsignar(peorIdx, proceso)
+        return true
+    }
 }
