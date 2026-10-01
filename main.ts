@@ -207,4 +207,21 @@ export class AdministradorMemoria {
         }
         this.setBloques(bloques)
     }
+
+    // Función interna: divide el bloque libre si sobra espacio y lo marca ocupado.
+    private partirYAsignar(indice: number, proceso: Proceso): void {
+        const bloques = this.getBloques()
+        const bloque = bloques[indice]
+        const requerido = proceso.getTamanoMemoria()
+
+        if (bloque.getTamano() > requerido) {
+            const sobrante = bloque.getTamano() - requerido
+            const nuevoBloqueLibre = new BloqueMemoria(bloque.getInicio() + requerido, sobrante, true, null)
+            bloque.setTamano(requerido)
+            bloques.splice(indice + 1, 0, nuevoBloqueLibre)
+        }
+        bloque.setLibre(false)
+        bloque.setPid(proceso.getPid())
+        this.setBloques(bloques)
+    }
 }
