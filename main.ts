@@ -142,3 +142,69 @@ export class BloqueMemoria {
         return this.getInicio() + this.getTamano()
     }
 }
+
+// ==============================================================================
+// ADMINISTRADOR DE MEMORIA (1024 KB, ASIGNACIONES Y COALESCENCIA)
+// ==============================================================================
+
+export type AlgoritmoMemoria = "FIRST_FIT" | "BEST_FIT" | "WORST_FIT"
+
+export interface MetricasMemoria {
+    ocupada: number
+    libreTotal: number
+    mayorHueco: number
+    porcOcupacion: number
+    fragExterna: number
+}
+
+export class AdministradorMemoria {
+    private _tamano_total: number = 0 // Tamaño total de la RAM en KB
+    private _bloques: BloqueMemoria[] = [] // Lista ordenada de particiones
+
+    constructor(tamanoTotal: number = 1024) {
+        this.setTamanoTotal(tamanoTotal)
+        // Al iniciar, la memoria completa es un único bloque libre
+        this.setBloques([new BloqueMemoria(0, tamanoTotal, true)])
+    }
+
+    protected setTamanoTotal(value: number): void {
+        this._tamano_total = value
+    }
+
+    getTamanoTotal(): number {
+        return this._tamano_total
+    }
+
+    private setBloques(value: BloqueMemoria[]): void {
+        this._bloques = value
+    }
+
+    /* Devuelve una copia de la lista para que nadie de afuera la modifique */
+    getBloques(): BloqueMemoria[] {
+        return [...this._bloques]
+    }
+
+    /*
+     Recorre la lista de particiones y fusiona bloques libres contiguos en uno solo.
+     Esencial para reducir la fragmentación externa tras liberar memoria.
+    */
+    coalescencia(): void {
+        const bloques = this.getBloques()
+        let i = 0
+        while (i < bloques.length - 1) {
+            const actual = bloques[i]
+            const siguiente = bloques[i + 1]
+
+            // Si dos bloques contiguos están libres, se unen sumando sus capacidades
+            if (actual.isLibre() && siguiente.isLibre()) {
+                actual.setTamano(actual.getTamano() + siguiente.getTamano())
+                bloques.splice(i + 1, 1) // Se remueve el bloque absorbido
+                // No incrementamos 'i' porque el bloque actual creció
+                // y podría volver a fusionarse con el que le sigue
+            } else {
+                i++
+            }
+        }
+        this.setBloques(bloques)
+    }
+}
