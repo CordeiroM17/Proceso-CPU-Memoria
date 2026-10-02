@@ -342,7 +342,6 @@ export class SimuladorSO {
     }
 
     // Configuración
-
     private setMemoria(value: AdministradorMemoria): void {
         this._memoria = value
     }
@@ -369,7 +368,6 @@ export class SimuladorSO {
     }
 
     // Colas (los getters devuelven copias, solo el simulador las modifica)
-
     private setColaNuevos(value: Proceso[]): void {
         this._cola_nuevos = value
     }
@@ -411,7 +409,6 @@ export class SimuladorSO {
     }
 
     // Estado de CPU y estadísticas
-
     private setCpuProceso(value: Proceso | null): void {
         this._cpu_proceso = value
     }
@@ -476,4 +473,156 @@ export class SimuladorSO {
         this.setCpuProceso(null)
         this.setCambiosContexto(this.getCambiosContexto() + 1)
     }
+
+    // PASO A: Ingreso de procesos NUEVOS y reintento de ESPERANDO_MEMORIA.
+    private admitirProcesos(): void {
+        // Pasar de Nuevos a Esperando Memoria
+        const esperando = this.getColaEsperandoMemoria()
+        for (const p of this.getColaNuevos()) {
+            p.setEstado("ESPERANDO_MEMORIA")
+            esperando.push(p)
+        }
+        this.setColaNuevos([])
+
+        // Intentar alojar en RAM a los que esperan memoria
+        const siguenEsperando: Proceso[] = []
+        for (const p of esperando) {
+            if (this.intentarAsignarMemoria(p)) {
+                p.setEstado("LISTO")
+                this.setColaListos([...this.getColaListos(), p])
+                console.log(`   [MEMORIA] Proceso ${p.getPid()} obtuvo memoria. Pasa a LISTO.`)
+            } else {
+                siguenEsperando.push(p)
+            }
+        }
+        this.setColaEsperandoMemoria(siguenEsperando)
+    }
+
+    // PASO B: Actualizar cola de BLOQUEADOS (Entrada/Salida).
+    private actualizarBloqueados(): void {
+        const sigueBloqueados: Proceso[] = []
+        for (const p of this.getColaBloqueados()) {
+            p.setTiempoBloqueoRestante(p.getTiempoBloqueoRestante() - 1)
+            if (p.getTiempoBloqueoRestante() <= 0) {
+                p.setEstado("LISTO")
+                this.setColaListos([...this.getColaListos(), p])
+                console.log(`   [E/S COMPLETADA] Proceso ${p.getPid()} vuelve a cola de LISTOS.`)
+            } else {
+                sigueBloqueados.push(p)
+            }
+        }
+        this.setColaBloqueados(sigueBloqueados)
+    }
+
+    // PASO C: Despachar CPU si está desocupada (FIFO desde Listos).
+    private despacharCpu(): void {
+        const listos = this.getColaListos()
+        if (this.getCpuProceso() !== null || listos.length === 0) return
+
+        const p = listos.shift() as Proceso
+        this.setColaListos(listos)
+        p.setEstado("EJECUTANDO")
+        p.setQuantumConsumido(0)
+        this.setCpuProceso(p)
+        console.log(`   [CPU] El proceso ${p.getPid()} toma el procesador.`)
+    }
+
+    // PASO D: Ejecución de 1 tick en CPU (Round-Robin).
+    private ejecutarCpu(): void {
+        const p = this.getCpuProceso()
+        if (p === null) {
+            console.log("   [CPU OCIOSA] Ningún proceso listo para ejecutar.")
+            return
+        }
+
+        this.setTicksCpuOcupada(this.getTicksCpuOcupada() + 1)
+        p.setTiempoCpuRestante(p.getTiempoCpuRestante() - 1)
+        p.setQuantumConsumido(p.getQuantumConsumido() + 1)
+
+        console.log(
+            `   [EJECUTANDO] PID: ${p.getPid()} | Restante: ${p.getTiempoCpuRestante()} ticks | ` +
+                `Quantum: ${p.getQuantumConsumido()}/${this.getQuantumLimite()}`
+        )
+
+        // Subcaso D1: El proceso TERMINÓ
+        if (p.getTiempoCpuRestante() === 0) {
+            p.setEstado("TERMINADO")
+            console.log(`   [FINALIZADO] Proceso ${p.getPid()} finalizó. Libera memoria y CPU.`)
+            this.getMemoria().liberar(p.getPid())
+            this.setProcesosTerminados([...this.getProcesosTerminados(), p])
+            this.setCpuProceso(null)
+        }
+        // Subcaso D2: Se agotó el QUANTUM
+        else if (p.getQuantumConsumido() === this.getQuantumLimite()) {
+            if (this.getColaListos().length > 0) {
+                console.log(`   [FIN QUANTUM] ${p.getPid()} agotó Quantum. Vuelve al final de LISTOS.`)
+                p.setEstado("LISTO")
+                p.setQuantumConsumido(0)
+                this.setColaListos([...this.getColaListos(), p])
+                this.setCpuProceso(null)
+                this.setCambiosContexto(this.getCambiosContexto() + 1)
+            } else {
+                // Si no hay nadie más en cola, renueva quantum y continúa
+                console.log(`   [RENOVACIÓN] ${p.getPid()} continúa en CPU (cola de Listos vacía).`)
+                p.setQuantumConsumido(0)
+            }
+        }
+    }
+
+    // PASO E: Reporte de métricas del tick.
+    private reportarMetricas(): void {
+        const m = this.getMemoria().obtenerMetricas()
+        const usoCpu = (this.getTicksCpuOcupada() / this.getRelojTick()) * 100
+        const pids = (cola: Proceso[]) => `[${cola.map((p) => `'${p.getPid()}'`).join(", ")}]`
+
+        console.log("\n   --- MÉTRICAS EN TIEMPO REAL ---")
+        console.log(`   Uso de CPU Acumulado: ${usoCpu.toFixed(2)}% | Cambios de Contexto: ${this.getCambiosContexto()}`)
+        console.log(
+            `   Memoria Ocupada: ${m.ocupada} KB (${m.porcOcupacion.toFixed(1)}%) | Libre Total: ${m.libreTotal} KB`
+        )
+        console.log(`   Mayor Hueco Contiguo: ${m.mayorHueco} KB | Fragmentación Externa: ${m.fragExterna.toFixed(2)}%`)
+        console.log(`   Cola de Listos: ${pids(this.getColaListos())}`)
+        console.log(`   Esperando Memoria: ${pids(this.getColaEsperandoMemoria())}`)
+        this.getMemoria().imprimirMapa()
+    }
+
+    // Ejecuta un ciclo completo discreto (1 tick de simulación). */
+    avanzarTick(): void {
+        this.setRelojTick(this.getRelojTick() + 1)
+        console.log(`\n${"=".repeat(25)} TICK ${this.getRelojTick()} ${"=".repeat(25)}`)
+
+        this.admitirProcesos() // Paso A
+        this.actualizarBloqueados() // Paso B
+        this.despacharCpu() // Paso C
+        this.ejecutarCpu() // Paso D
+        this.reportarMetricas() // Paso E
+    }
+}
+
+// ==============================================================================
+// CASO DE PRUEBA Y EJECUCIÓN DEMOSTRATIVA
+// ==============================================================================
+
+console.log("INICIANDO SIMULADOR DISCRETO (SISTEMAS OPERATIVOS)...\n")
+
+// Creamos el simulador con First-Fit y Quantum = 2
+const simulador = new SimuladorSO("FIRST_FIT", 2)
+
+// Creamos un lote de procesos representativos
+// PID, Tamaño Memoria (KB), Tiempo de CPU (ticks)
+const procesos = [
+    new Proceso("P1", 200, 4),
+    new Proceso("P2", 350, 3),
+    new Proceso("P3", 150, 2),
+    new Proceso("P4", 400, 3),
+]
+
+// Cargamos los procesos al simulador
+for (const p of procesos) {
+    simulador.agregarProceso(p)
+}
+
+// Avanzamos la simulación tick a tick por 12 ciclos
+for (let i = 0; i < 12; i++) {
+    simulador.avanzarTick()
 }
