@@ -443,4 +443,37 @@ export class SimuladorSO {
     getTicksCpuOcupada(): number {
         return this._ticks_cpu_ocupada
     }
+
+    // Ingresa un nuevo proceso al sistema.
+    agregarProceso(proceso: Proceso): void {
+        proceso.setEstado("NUEVO")
+        this.setColaNuevos([...this.getColaNuevos(), proceso])
+    }
+
+    // Intenta ubicar el proceso en RAM según el algoritmo configurado.
+    intentarAsignarMemoria(proceso: Proceso): boolean {
+        switch (this.getAlgoritmoMemoria()) {
+            case "FIRST_FIT":
+                return this.getMemoria().asignarFirstFit(proceso)
+            case "BEST_FIT":
+                return this.getMemoria().asignarBestFit(proceso)
+            case "WORST_FIT":
+                return this.getMemoria().asignarWorstFit(proceso)
+            default:
+                return false
+        }
+    }
+
+    // Permite forzar el paso del proceso en CPU al estado Bloqueado por E/S.
+    bloquearProcesoActual(ticksBloqueo: number = 2): void {
+        const p = this.getCpuProceso()
+        if (p === null) return
+
+        p.setEstado("BLOQUEADO")
+        p.setTiempoBloqueoRestante(ticksBloqueo)
+        this.setColaBloqueados([...this.getColaBloqueados(), p])
+        console.log(`   [E/S] Proceso ${p.getPid()} se bloquea por ${ticksBloqueo} ticks.`)
+        this.setCpuProceso(null)
+        this.setCambiosContexto(this.getCambiosContexto() + 1)
+    }
 }
