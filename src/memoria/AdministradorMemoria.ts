@@ -1,3 +1,6 @@
+import { BloqueMemoria } from "../models/BloqueMemoria.ts";
+import { Proceso } from "../models/Proceso.ts";
+import { MetricasMemoria } from "../types/MetricasMemoria.ts";
 // ==============================================================================
 // ADMINISTRADOR DE MEMORIA (1024 KB, ASIGNACIONES Y COALESCENCIA)
 // ==============================================================================

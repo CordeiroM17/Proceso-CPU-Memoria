@@ -1,3 +1,6 @@
+import { AdministradorMemoria } from "../memoria/AdministradorMemoria.ts";
+import { AlgoritmoMemoria } from "../types/AlgoritmoMemoria.ts";
+import { Proceso } from "../models/Proceso.ts";
 // ==============================================================================
 // MOTOR DEL SIMULADOR (TICKS Y PLANIFICADOR ROUND-ROBIN)
 // ==============================================================================
