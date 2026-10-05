@@ -52,4 +52,13 @@ export class BloqueMemoria {
   getFin(): number {
     return this.getInicio() + this.getTamano();
   }
+
+  copiar(): BloqueMemoria {
+    return new BloqueMemoria(
+      this.getInicio(),
+      this.getTamano(),
+      this.isLibre(),
+      this.getPid(),
+    );
+  }
 }
