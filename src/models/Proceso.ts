@@ -1,4 +1,4 @@
-import { EstadoProceso } from "../types/EstadoMemoria";
+import { EstadoProceso } from "../types/EstadoProceso";
 import { VistaProceso } from "../types/VistaProceso";
 import { esEnteroPositivo } from "../utils/validaciones";
 // ------------------------------------------------------------------------------
