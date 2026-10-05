@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "type": "module",
-  "main": "src/main.ts",
   "scripts": {
     "test": "vitest run",
     "coverage": "vitest run --coverage",
