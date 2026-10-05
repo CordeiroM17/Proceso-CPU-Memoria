@@ -1,6 +1,9 @@
-import { BloqueMemoria } from "../models/BloqueMemoria.ts";
-import { Proceso } from "../models/Proceso.ts";
-import { MetricasMemoria } from "../types/MetricasMemoria.ts";
+import { BloqueMemoria } from "../models/BloqueMemoria";
+import { Proceso } from "../models/Proceso";
+import { MetricasMemoria } from "../types/MetricasMemoria";
+import { FirstFit } from "./FirstFit";
+import { IEstrategiaAsignacion } from "./IEstrategiaAsignacion";
+
 // ==============================================================================
 // ADMINISTRADOR DE MEMORIA (1024 KB, ASIGNACIONES Y COALESCENCIA)
 // ==============================================================================
@@ -80,12 +83,7 @@ export class AdministradorMemoria {
 
   // Busca el primer hueco libre donde quepa el proceso.
   asignarFirstFit(proceso: Proceso): boolean {
-    const indice = this.getBloques().findIndex(
-      (b) => b.isLibre() && b.getTamano() >= proceso.getTamanoMemoria(),
-    );
-    if (indice === -1) return false;
-    this.partirYAsignar(indice, proceso);
-    return true;
+    return this.asignar(proceso, new FirstFit());
   }
 
   // Busca el bloque libre que deje el menor desperdicio de espacio residual.
@@ -170,5 +168,15 @@ export class AdministradorMemoria {
         `   [${inicio} KB - ${fin} KB] (${tamano} KB) -> ${estadoStr}`,
       );
     }
+  }
+  /** Asigna el proceso con la estrategia recibida: funciona igual para cualquier política. */
+  asignar(proceso: Proceso, estrategia: IEstrategiaAsignacion): boolean {
+    const indice = estrategia.seleccionar(
+      this.getBloques(),
+      proceso.getTamanoMemoria(),
+    );
+    if (indice === -1) return false;
+    this.partirYAsignar(indice, proceso);
+    return true;
   }
 }

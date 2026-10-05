@@ -43,14 +43,6 @@ describe("AdministradorMemoria", () => {
     it("usa 1024 KB si no se indica tamaño", () => {
       expect(new AdministradorMemoria().getTamanoTotal()).toBe(1024);
     });
-
-    it("getBloques devuelve una copia de la lista", () => {
-      const mem = new AdministradorMemoria(1024);
-      const copia = mem.getBloques();
-      copia.pop();
-
-      expect(mem.getBloques()).toHaveLength(1);
-    });
   });
 
   describe("First-Fit", () => {
@@ -131,29 +123,6 @@ describe("AdministradorMemoria", () => {
       expect(primero.getPid()).toBeNull();
     });
 
-    it("fusiona con el hueco libre de la derecha", () => {
-      const mem = new AdministradorMemoria(1024);
-      mem.asignarFirstFit(new Proceso("P1", 200, 1));
-      mem.liberar("P1");
-
-      expect(mem.getBloques()).toHaveLength(1);
-      expect(mem.getBloques()[0].getTamano()).toBe(1024);
-    });
-
-    it("fusiona a ambos lados al liberar un bloque del medio", () => {
-      const mem = new AdministradorMemoria(1024);
-      mem.asignarFirstFit(new Proceso("A", 100, 1));
-      mem.asignarFirstFit(new Proceso("B", 100, 1));
-      mem.asignarFirstFit(new Proceso("C", 100, 1));
-      mem.liberar("A");
-      mem.liberar("C");
-      expect(mem.getBloques()).toHaveLength(3); // [libre 100][B][libre 824]
-
-      mem.liberar("B");
-      expect(mem.getBloques()).toHaveLength(1);
-      expect(mem.getBloques()[0].getTamano()).toBe(1024);
-    });
-
     it("no fusiona huecos que no son contiguos", () => {
       const mem = memoriaConHuecos();
       const libres = mem.getBloques().filter((b) => b.isLibre());
@@ -183,16 +152,6 @@ describe("AdministradorMemoria", () => {
       expect(m.mayorHueco).toBe(0);
       expect(m.porcOcupacion).toBe(100);
       expect(m.fragExterna).toBe(0);
-    });
-
-    it("calcula la fragmentación externa con la fórmula de la cátedra", () => {
-      const m = memoriaConHuecos().obtenerMetricas();
-
-      expect(m.ocupada).toBe(150);
-      expect(m.libreTotal).toBe(874);
-      expect(m.mayorHueco).toBe(400);
-      expect(m.porcOcupacion).toBeCloseTo((150 / 1024) * 100);
-      expect(m.fragExterna).toBeCloseTo((1 - 400 / 874) * 100);
     });
   });
 

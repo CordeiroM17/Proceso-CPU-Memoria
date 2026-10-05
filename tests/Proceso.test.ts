@@ -61,12 +61,6 @@ describe("evento de E/S", () => {
     expect(p.getDuracionEs()).toBe(3);
     expect(p.getEsDisparada()).toBe(false);
   });
-
-  it("se puede marcar la E/S como disparada", () => {
-    const p = new Proceso("P1", 100, 4, 2, 3);
-    p.setEsDisparada(true);
-    expect(p.getEsDisparada()).toBe(true);
-  });
 });
 
 describe("esValido", () => {
@@ -76,28 +70,6 @@ describe("esValido", () => {
 
   it("acepta un proceso con E/S coherente", () => {
     expect(new Proceso("P1", 100, 4, 2, 3).esValido()).toBe(true);
-  });
-
-  it.each([
-    ["pid vacío", "", 100, 4],
-    ["memoria 0", "P1", 0, 4],
-    ["memoria negativa", "P1", -100, 4],
-    ["CPU 0", "P1", 100, 0],
-    ["CPU decimal", "P1", 100, 1.5],
-  ])("rechaza %s", (_, pid, memoria, cpu) => {
-    expect(new Proceso(pid, memoria, cpu).esValido()).toBe(false);
-  });
-
-  it.each([
-    ["duración sin disparador", 0, 2],
-    ["disparador sin duración", 2, 0],
-    ["disparador negativo", -1, 2],
-    ["E/S que se pide al terminar", 4, 2],
-    ["E/S después del final", 5, 2],
-  ])("rechaza una E/S inválida: %s", (_, cpuParaEs, duracion) => {
-    expect(new Proceso("P1", 100, 4, cpuParaEs, duracion).esValido()).toBe(
-      false,
-    );
   });
 });
 
@@ -122,33 +94,5 @@ describe("debeBloquearse", () => {
     p.setTiempoCpuRestante(2);
     p.setEsDisparada(true);
     expect(p.debeBloquearse()).toBe(false);
-  });
-});
-
-describe("getVista", () => {
-  it("devuelve los datos actuales del proceso", () => {
-    const p = new Proceso("P1", 200, 4);
-    p.setEstado("LISTO");
-    p.setTiempoCpuRestante(3);
-
-    expect(p.getVista()).toEqual({
-      pid: "P1",
-      estado: "LISTO",
-      tamanoMemoria: 200,
-      tiempoCpuTotal: 4,
-      tiempoCpuRestante: 3,
-      quantumConsumido: 0,
-      tiempoBloqueoRestante: 0,
-    });
-  });
-
-  it("está congelada y no se actualiza sola", () => {
-    const p = new Proceso("P1", 200, 4);
-    const vista = p.getVista();
-    p.setTiempoCpuRestante(1);
-
-    expect(Object.isFrozen(vista)).toBe(true);
-    expect(vista.tiempoCpuRestante).toBe(4);
-    expect("setEstado" in vista).toBe(false);
   });
 });

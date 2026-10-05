@@ -1,18 +1,18 @@
-import { EstadoProceso } from "../types/EstadoMemoria.ts";
-import { VistaProceso } from "../types/VistaProceso.ts";
+import { EstadoProceso } from "../types/EstadoMemoria";
+import { VistaProceso } from "../types/VistaProceso";
 import { esEnteroPositivo } from "../utils/validaciones";
 // ------------------------------------------------------------------------------
 // 1. ESTRUCTURAS DE DATOS (CLASES BASE)
 // ------------------------------------------------------------------------------
 
 export class Proceso {
-  private _pid: string; // Identificador único (ej: "P1")
-  private _tamano_memoria: number; // Memoria requerida en KB
-  private _tiempo_cpu_total: number; // Ticks totales que demanda la CPU
-  private _tiempo_cpu_restante: number; // Ticks que le faltan para terminar
+  private _pid: string = "P0"; // Identificador único (ej: "P1")
+  private _tamano_memoria: number = 0; // Memoria requerida en KB
+  private _tiempo_cpu_total: number = 0; // Ticks totales que demanda la CPU
+  private _tiempo_cpu_restante: number = 0; // Ticks que le faltan para terminar
   private _estado: EstadoProceso = "NUEVO";
-  private _quantum_consumido: number; // Ticks consecutivos que lleva en CPU en su turno
-  private _tiempo_bloqueo_restante: number; // Ticks restantes que debe esperar en E/S
+  private _quantum_consumido: number = 0; // Ticks consecutivos que lleva en CPU en su turno
+  private _tiempo_bloqueo_restante: number = 0; // Ticks restantes que debe esperar en E/S
   private _cpu_para_es: number = 0; // Ticks de CPU consumidos tras los cuales pide E/S (0 = nunca pide)
   private _duracion_es: number = 0; // Ticks que dura su bloqueo por E/S
   private _es_disparada: boolean = false; // true cuando ya pidió su E/S (se dispara una sola vez)
@@ -30,7 +30,6 @@ export class Proceso {
     this.setTiempoCpuRestante(tiempoCpuTotal);
     this.setEstado("NUEVO");
     this.setQuantumConsumido(0);
-    this.setTiempoBloqueoRestante(0);
     this.setTiempoBloqueoRestante(0);
     this.setCpuParaEs(cpuParaEs);
     this.setDuracionEs(duracionEs);

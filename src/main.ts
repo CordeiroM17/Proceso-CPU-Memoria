@@ -1,8 +1,8 @@
 // ==============================================================================
 // CASO DE PRUEBA Y EJECUCIÓN DEMOSTRATIVA
 // ==============================================================================
-import { SimuladorSO } from "./simulador/SimuladorSO.ts";
-import { Proceso } from "./models/Proceso.ts";
+import { SimuladorSO } from "./simulador/SimuladorSO";
+import { Proceso } from "./models/Proceso";
 console.log("INICIANDO SIMULADOR DISCRETO (SISTEMAS OPERATIVOS)...\n");
 
 // Creamos el simulador con First-Fit y Quantum = 2
