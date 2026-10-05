@@ -1,4 +1,4 @@
-import type { EstadoProceso } from "./EstadoMemoria";
+import type { EstadoProceso } from "./EstadoProceso";
 
 /** Foto de solo lectura de un proceso (RF10). */
 export interface VistaProceso {
