@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1791228920242" clover="3.2.0">
-  <project timestamp="1791228920242" name="All files">
-    <metrics statements="119" coveredstatements="119" conditionals="37" coveredconditionals="37" methods="47" coveredmethods="47" elements="203" coveredelements="203" complexity="0" loc="119" ncloc="119" packages="2" files="3" classes="3"/>
+<coverage generated="1791237144759" clover="3.2.0">
+  <project timestamp="1791237144759" name="All files">
+    <metrics statements="148" coveredstatements="148" conditionals="57" coveredconditionals="57" methods="62" coveredmethods="62" elements="267" coveredelements="267" complexity="0" loc="148" ncloc="148" packages="4" files="5" classes="5"/>
     <package name="memoria">
       <metrics statements="80" coveredstatements="80" conditionals="35" coveredconditionals="35" methods="22" coveredmethods="22"/>
       <file name="AdministradorMemoria.ts" path="C:\Users\luart\OneDrive\Escritorio\So\src\memoria\AdministradorMemoria.ts">
@@ -89,7 +89,7 @@
       </file>
     </package>
     <package name="models">
-      <metrics statements="39" coveredstatements="39" conditionals="2" coveredconditionals="2" methods="25" coveredmethods="25"/>
+      <metrics statements="58" coveredstatements="58" conditionals="18" coveredconditionals="18" methods="33" coveredmethods="33"/>
       <file name="BloqueMemoria.ts" path="C:\Users\luart\OneDrive\Escritorio\So\src\models\BloqueMemoria.ts">
         <metrics statements="17" coveredstatements="17" conditionals="2" coveredconditionals="2" methods="10" coveredmethods="10"/>
         <line num="3" count="71" type="stmt"/>
@@ -111,29 +111,70 @@
         <line num="53" count="4" type="stmt"/>
       </file>
       <file name="Proceso.ts" path="C:\Users\luart\OneDrive\Escritorio\So\src\models\Proceso.ts">
-        <metrics statements="22" coveredstatements="22" conditionals="0" coveredconditionals="0" methods="15" coveredmethods="15"/>
-        <line num="11" count="56" type="stmt"/>
-        <line num="16" count="56" type="stmt"/>
-        <line num="17" count="56" type="stmt"/>
-        <line num="18" count="56" type="stmt"/>
-        <line num="19" count="56" type="stmt"/>
-        <line num="20" count="56" type="stmt"/>
-        <line num="21" count="56" type="stmt"/>
-        <line num="22" count="56" type="stmt"/>
-        <line num="26" count="56" type="stmt"/>
-        <line num="30" count="49" type="stmt"/>
-        <line num="34" count="56" type="stmt"/>
-        <line num="38" count="111" type="stmt"/>
-        <line num="42" count="56" type="stmt"/>
-        <line num="46" count="3" type="stmt"/>
-        <line num="50" count="58" type="stmt"/>
-        <line num="54" count="3" type="stmt"/>
-        <line num="58" count="58" type="stmt"/>
-        <line num="62" count="3" type="stmt"/>
-        <line num="66" count="57" type="stmt"/>
-        <line num="70" count="2" type="stmt"/>
-        <line num="74" count="57" type="stmt"/>
-        <line num="78" count="2" type="stmt"/>
+        <metrics statements="41" coveredstatements="41" conditionals="16" coveredconditionals="16" methods="23" coveredmethods="23"/>
+        <line num="12" count="74" type="stmt"/>
+        <line num="15" count="74" type="stmt"/>
+        <line num="16" count="74" type="stmt"/>
+        <line num="17" count="74" type="stmt"/>
+        <line num="26" count="74" type="stmt"/>
+        <line num="27" count="74" type="stmt"/>
+        <line num="28" count="74" type="stmt"/>
+        <line num="29" count="74" type="stmt"/>
+        <line num="30" count="74" type="stmt"/>
+        <line num="31" count="74" type="stmt"/>
+        <line num="32" count="74" type="stmt"/>
+        <line num="33" count="74" type="stmt"/>
+        <line num="34" count="74" type="stmt"/>
+        <line num="35" count="74" type="stmt"/>
+        <line num="36" count="74" type="stmt"/>
+        <line num="40" count="74" type="stmt"/>
+        <line num="44" count="61" type="stmt"/>
+        <line num="48" count="74" type="stmt"/>
+        <line num="52" count="122" type="stmt"/>
+        <line num="56" count="74" type="stmt"/>
+        <line num="60" count="20" type="stmt"/>
+        <line num="64" count="79" type="stmt"/>
+        <line num="68" count="8" type="stmt"/>
+        <line num="72" count="76" type="stmt"/>
+        <line num="76" count="3" type="stmt"/>
+        <line num="80" count="75" type="stmt"/>
+        <line num="84" count="2" type="stmt"/>
+        <line num="88" count="149" type="stmt"/>
+        <line num="92" count="2" type="stmt"/>
+        <line num="98" count="74" type="stmt"/>
+        <line num="102" count="30" type="stmt"/>
+        <line num="106" count="74" type="stmt"/>
+        <line num="110" count="8" type="stmt"/>
+        <line num="114" count="76" type="stmt"/>
+        <line num="118" count="7" type="stmt"/>
+        <line num="123" count="12" type="cond" truecount="3" falsecount="0"/>
+        <line num="127" count="12" type="cond" truecount="2" falsecount="0"/>
+        <line num="128" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="130" count="5" type="stmt"/>
+        <line num="140" count="5" type="stmt"/>
+        <line num="141" count="5" type="stmt"/>
+      </file>
+    </package>
+    <package name="procesos">
+      <metrics statements="9" coveredstatements="9" conditionals="2" coveredconditionals="2" methods="6" coveredmethods="6"/>
+      <file name="EventoES.ts" path="C:\Users\luart\OneDrive\Escritorio\So\src\procesos\EventoES.ts">
+        <metrics statements="9" coveredstatements="9" conditionals="2" coveredconditionals="2" methods="6" coveredmethods="6"/>
+        <line num="6" count="8" type="stmt"/>
+        <line num="7" count="8" type="stmt"/>
+        <line num="10" count="8" type="stmt"/>
+        <line num="11" count="8" type="stmt"/>
+        <line num="15" count="8" type="stmt"/>
+        <line num="19" count="8" type="stmt"/>
+        <line num="23" count="8" type="stmt"/>
+        <line num="27" count="5" type="stmt"/>
+        <line num="32" count="7" type="stmt"/>
+      </file>
+    </package>
+    <package name="utils">
+      <metrics statements="1" coveredstatements="1" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
+      <file name="validaciones.ts" path="C:\Users\luart\OneDrive\Escritorio\So\src\utils\validaciones.ts">
+        <metrics statements="1" coveredstatements="1" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
+        <line num="3" count="40" type="cond" truecount="2" falsecount="0"/>
       </file>
     </package>
   </project>

@@ -68,3 +68,59 @@ describe("evento de E/S", () => {
     expect(p.getEsDisparada()).toBe(true);
   });
 });
+
+describe("esValido", () => {
+  it("acepta un proceso con datos correctos", () => {
+    expect(new Proceso("P1", 100, 4).esValido()).toBe(true);
+  });
+
+  it("acepta un proceso con E/S coherente", () => {
+    expect(new Proceso("P1", 100, 4, 2, 3).esValido()).toBe(true);
+  });
+
+  it.each([
+    ["pid vacío", "", 100, 4],
+    ["memoria 0", "P1", 0, 4],
+    ["memoria negativa", "P1", -100, 4],
+    ["CPU 0", "P1", 100, 0],
+    ["CPU decimal", "P1", 100, 1.5],
+  ])("rechaza %s", (_, pid, memoria, cpu) => {
+    expect(new Proceso(pid, memoria, cpu).esValido()).toBe(false);
+  });
+
+  it.each([
+    ["duración sin disparador", 0, 2],
+    ["disparador sin duración", 2, 0],
+    ["disparador negativo", -1, 2],
+    ["E/S que se pide al terminar", 4, 2],
+    ["E/S después del final", 5, 2],
+  ])("rechaza una E/S inválida: %s", (_, cpuParaEs, duracion) => {
+    expect(new Proceso("P1", 100, 4, cpuParaEs, duracion).esValido()).toBe(
+      false,
+    );
+  });
+});
+
+describe("debeBloquearse", () => {
+  it("es false si el proceso no tiene E/S", () => {
+    expect(new Proceso("P1", 100, 4).debeBloquearse()).toBe(false);
+  });
+
+  it("es true cuando consumió exactamente la CPU que dispara la E/S", () => {
+    const p = new Proceso("P1", 100, 4, 2, 3);
+    expect(p.debeBloquearse()).toBe(false);
+
+    p.setTiempoCpuRestante(3);
+    expect(p.debeBloquearse()).toBe(false);
+
+    p.setTiempoCpuRestante(2);
+    expect(p.debeBloquearse()).toBe(true);
+  });
+
+  it("es false si la E/S ya se disparó", () => {
+    const p = new Proceso("P1", 100, 4, 2, 3);
+    p.setTiempoCpuRestante(2);
+    p.setEsDisparada(true);
+    expect(p.debeBloquearse()).toBe(false);
+  });
+});

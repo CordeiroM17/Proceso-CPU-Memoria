@@ -1,4 +1,5 @@
 import { EstadoProceso } from "../types/EstadoMemoria.ts";
+import { esEnteroPositivo } from "../utils/validaciones";
 // ------------------------------------------------------------------------------
 // 1. ESTRUCTURAS DE DATOS (CLASES BASE)
 // ------------------------------------------------------------------------------
@@ -115,5 +116,32 @@ export class Proceso {
 
   getEsDisparada(): boolean {
     return this._es_disparada;
+  }
+
+  esValido(): boolean {
+    const datosValidos =
+      this.getPid() !== "" &&
+      esEnteroPositivo(this.getTamanoMemoria()) &&
+      esEnteroPositivo(this.getTiempoCpuTotal());
+
+    if (this.getCpuParaEs() === 0) {
+      return datosValidos && this.getDuracionEs() === 0;
+    }
+    return (
+      datosValidos &&
+      esEnteroPositivo(this.getCpuParaEs()) &&
+      esEnteroPositivo(this.getDuracionEs()) &&
+      this.getCpuParaEs() < this.getTiempoCpuTotal()
+    );
+  }
+
+  /** True si ya consumió la CPU que dispara su E/S y todavía no la pidió. */
+  debeBloquearse(): boolean {
+    const consumido = this.getTiempoCpuTotal() - this.getTiempoCpuRestante();
+    return (
+      this.getCpuParaEs() > 0 &&
+      !this.getEsDisparada() &&
+      consumido === this.getCpuParaEs()
+    );
   }
 }
