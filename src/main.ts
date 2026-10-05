@@ -6,16 +6,9 @@
 // ------------------------------------------------------------------------------
 // 1. ESTRUCTURAS DE DATOS (CLASES BASE)
 // ------------------------------------------------------------------------------
-
-// Estados: NUEVO, ESPERANDO_MEMORIA, LISTO, EJECUTANDO, BLOQUEADO, TERMINADO
-export type EstadoProceso =
-  | "NUEVO"
-  | "ESPERANDO_MEMORIA"
-  | "LISTO"
-  | "EJECUTANDO"
-  | "BLOQUEADO"
-  | "TERMINADO";
-
+import { EstadoProceso } from "../types/EstadoMemoria";
+import { AlgoritmoMemoria } from "../types/AlgoritmoMemoria";
+import { MetricasMemoria } from "../types/MetricasMemoria";
 export class Proceso {
   private _pid: string; // Identificador único (ej: "P1")
   private _tamano_memoria: number; // Memoria requerida en KB
@@ -151,16 +144,6 @@ export class BloqueMemoria {
 // ==============================================================================
 // ADMINISTRADOR DE MEMORIA (1024 KB, ASIGNACIONES Y COALESCENCIA)
 // ==============================================================================
-
-export type AlgoritmoMemoria = "FIRST_FIT" | "BEST_FIT" | "WORST_FIT";
-
-export interface MetricasMemoria {
-  ocupada: number;
-  libreTotal: number;
-  mayorHueco: number;
-  porcOcupacion: number;
-  fragExterna: number;
-}
 
 export class AdministradorMemoria {
   private _tamano_total: number = 0; // Tamaño total de la RAM en KB
