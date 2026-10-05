@@ -1,8 +1,10 @@
 import { BloqueMemoria } from "../models/BloqueMemoria";
 import { Proceso } from "../models/Proceso";
 import { MetricasMemoria } from "../types/MetricasMemoria";
-import { FirstFit } from "./FirstFit";
 import { IEstrategiaAsignacion } from "./IEstrategiaAsignacion";
+import { FirstFit } from "./FirstFit";
+import { BestFit } from "./BestFit";
+import { WorstFit } from "./WorstFit";
 
 // ==============================================================================
 // ADMINISTRADOR DE MEMORIA (1024 KB, ASIGNACIONES Y COALESCENCIA)
@@ -88,41 +90,12 @@ export class AdministradorMemoria {
 
   // Busca el bloque libre que deje el menor desperdicio de espacio residual.
   asignarBestFit(proceso: Proceso): boolean {
-    let mejorIdx: number | null = null;
-    let menorDesperdicio = Infinity;
-
-    this.getBloques().forEach((b, i) => {
-      if (b.isLibre() && b.getTamano() >= proceso.getTamanoMemoria()) {
-        const desperdicio = b.getTamano() - proceso.getTamanoMemoria();
-        if (desperdicio < menorDesperdicio) {
-          menorDesperdicio = desperdicio;
-          mejorIdx = i;
-        }
-      }
-    });
-
-    if (mejorIdx === null) return false;
-    this.partirYAsignar(mejorIdx, proceso);
-    return true;
+    return this.asignar(proceso, new BestFit());
   }
 
   // Busca el bloque libre de mayor tamaño absoluto.
   asignarWorstFit(proceso: Proceso): boolean {
-    let peorIdx: number | null = null;
-    let mayorTamano = -1;
-
-    this.getBloques().forEach((b, i) => {
-      if (b.isLibre() && b.getTamano() >= proceso.getTamanoMemoria()) {
-        if (b.getTamano() > mayorTamano) {
-          mayorTamano = b.getTamano();
-          peorIdx = i;
-        }
-      }
-    });
-
-    if (peorIdx === null) return false;
-    this.partirYAsignar(peorIdx, proceso);
-    return true;
+    return this.asignar(proceso, new WorstFit());
   }
 
   // Libera la memoria de un proceso y ejecuta la coalescencia automática.
