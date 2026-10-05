@@ -44,3 +44,27 @@ describe("Proceso", () => {
     expect(p.getTiempoCpuTotal()).toBe(4);
   });
 });
+
+describe("evento de E/S", () => {
+  it("por defecto no tiene E/S", () => {
+    const p = new Proceso("P1", 100, 4);
+
+    expect(p.getCpuParaEs()).toBe(0);
+    expect(p.getDuracionEs()).toBe(0);
+    expect(p.getEsDisparada()).toBe(false);
+  });
+
+  it("guarda los datos de la E/S recibidos en el constructor", () => {
+    const p = new Proceso("P1", 100, 4, 2, 3);
+
+    expect(p.getCpuParaEs()).toBe(2);
+    expect(p.getDuracionEs()).toBe(3);
+    expect(p.getEsDisparada()).toBe(false);
+  });
+
+  it("se puede marcar la E/S como disparada", () => {
+    const p = new Proceso("P1", 100, 4, 2, 3);
+    p.setEsDisparada(true);
+    expect(p.getEsDisparada()).toBe(true);
+  });
+});

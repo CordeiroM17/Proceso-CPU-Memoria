@@ -11,8 +11,17 @@ export class Proceso {
   private _estado: EstadoProceso = "NUEVO";
   private _quantum_consumido: number; // Ticks consecutivos que lleva en CPU en su turno
   private _tiempo_bloqueo_restante: number; // Ticks restantes que debe esperar en E/S
+  private _cpu_para_es: number = 0; // Ticks de CPU consumidos tras los cuales pide E/S (0 = nunca pide)
+  private _duracion_es: number = 0; // Ticks que dura su bloqueo por E/S
+  private _es_disparada: boolean = false; // true cuando ya pidió su E/S (se dispara una sola vez)
 
-  constructor(pid: string, tamanoMemoria: number, tiempoCpuTotal: number) {
+  constructor(
+    pid: string,
+    tamanoMemoria: number,
+    tiempoCpuTotal: number,
+    cpuParaEs: number = 0,
+    duracionEs: number = 0,
+  ) {
     this.setPid(pid);
     this.setTamanoMemoria(tamanoMemoria);
     this.setTiempoCpuTotal(tiempoCpuTotal);
@@ -20,6 +29,10 @@ export class Proceso {
     this.setEstado("NUEVO");
     this.setQuantumConsumido(0);
     this.setTiempoBloqueoRestante(0);
+    this.setTiempoBloqueoRestante(0);
+    this.setCpuParaEs(cpuParaEs);
+    this.setDuracionEs(duracionEs);
+    this.setEsDisparada(false);
   }
 
   protected setPid(value: string): void {
@@ -76,5 +89,31 @@ export class Proceso {
 
   getTiempoBloqueoRestante(): number {
     return this._tiempo_bloqueo_restante;
+  }
+
+  // --- Evento de entrada/salida (RF08) ---
+
+  protected setCpuParaEs(value: number): void {
+    this._cpu_para_es = value;
+  }
+
+  getCpuParaEs(): number {
+    return this._cpu_para_es;
+  }
+
+  protected setDuracionEs(value: number): void {
+    this._duracion_es = value;
+  }
+
+  getDuracionEs(): number {
+    return this._duracion_es;
+  }
+
+  setEsDisparada(value: boolean): void {
+    this._es_disparada = value;
+  }
+
+  getEsDisparada(): boolean {
+    return this._es_disparada;
   }
 }
