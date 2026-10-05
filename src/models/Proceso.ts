@@ -1,4 +1,5 @@
 import { EstadoProceso } from "../types/EstadoMemoria.ts";
+import { VistaProceso } from "../types/VistaProceso.ts";
 import { esEnteroPositivo } from "../utils/validaciones";
 // ------------------------------------------------------------------------------
 // 1. ESTRUCTURAS DE DATOS (CLASES BASE)
@@ -143,5 +144,18 @@ export class Proceso {
       !this.getEsDisparada() &&
       consumido === this.getCpuParaEs()
     );
+  }
+
+  /** Copia congelada del estado actual: se puede mostrar sin riesgo de modificar el proceso (RF10). */
+  getVista(): VistaProceso {
+    return Object.freeze({
+      pid: this.getPid(),
+      estado: this.getEstado(),
+      tamanoMemoria: this.getTamanoMemoria(),
+      tiempoCpuTotal: this.getTiempoCpuTotal(),
+      tiempoCpuRestante: this.getTiempoCpuRestante(),
+      quantumConsumido: this.getQuantumConsumido(),
+      tiempoBloqueoRestante: this.getTiempoBloqueoRestante(),
+    });
   }
 }

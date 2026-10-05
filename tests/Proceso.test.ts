@@ -124,3 +124,31 @@ describe("debeBloquearse", () => {
     expect(p.debeBloquearse()).toBe(false);
   });
 });
+
+describe("getVista", () => {
+  it("devuelve los datos actuales del proceso", () => {
+    const p = new Proceso("P1", 200, 4);
+    p.setEstado("LISTO");
+    p.setTiempoCpuRestante(3);
+
+    expect(p.getVista()).toEqual({
+      pid: "P1",
+      estado: "LISTO",
+      tamanoMemoria: 200,
+      tiempoCpuTotal: 4,
+      tiempoCpuRestante: 3,
+      quantumConsumido: 0,
+      tiempoBloqueoRestante: 0,
+    });
+  });
+
+  it("está congelada y no se actualiza sola", () => {
+    const p = new Proceso("P1", 200, 4);
+    const vista = p.getVista();
+    p.setTiempoCpuRestante(1);
+
+    expect(Object.isFrozen(vista)).toBe(true);
+    expect(vista.tiempoCpuRestante).toBe(4);
+    expect("setEstado" in vista).toBe(false);
+  });
+});
